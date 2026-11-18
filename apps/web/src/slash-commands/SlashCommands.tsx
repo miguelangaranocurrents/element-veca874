@@ -38,6 +38,7 @@ import { WidgetType } from "../widgets/WidgetType";
 import { Jitsi } from "../widgets/Jitsi";
 import BugReportDialog from "../components/views/dialogs/BugReportDialog";
 import { ensureDMExists } from "../createRoom";
+import Markdown from "../Markdown";
 import { type ViewUserPayload } from "../dispatcher/payloads/ViewUserPayload";
 import { Action } from "../dispatcher/actions";
 import SdkConfig from "../SdkConfig";
@@ -73,7 +74,9 @@ export const Commands = [
         args: "<message>",
         description: _td("slash_command|spoiler"),
         runFn: function (cli, roomId, threadId, message = "") {
-            return successSync(ContentHelpers.makeHtmlMessage(message, `<span data-mx-spoiler>${message}</span>`));
+            // Render the spoiler contents as markdown so formatting such as **bold** survives inside the spoiler
+            const formatted = new Markdown(message).toHTML();
+            return successSync(ContentHelpers.makeHtmlMessage(message, `<span data-mx-spoiler>${formatted}</span>`));
         },
         category: CommandCategories.messages,
     }),
